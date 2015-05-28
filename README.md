@@ -106,14 +106,18 @@ queue.resume().then(function(){
 
 A queue emits also some useful events:
 ```javascript
+.on('active', function(job, jobPromise){
+  // Job started
+  // You can use jobPromise.cancel() to abort this job.
+})
+.on('progress', function(job, progress){
+  // Job progress updated!
+})
 queue.on('completed', function(job){
   // Job completed!
 })
 .on('failed', function(job, err){
   // Job failed with reason err!
-})
-.on('progress', function(job, progress){
-  // Job progress updated!
 })
 .on('paused', function(){
   // The queue has been paused
@@ -172,7 +176,7 @@ Useful patterns
 
 ####Message Queue
 
-Bull can also be used for persistent messsage queues. This is a quite useful
+Bull can also be used for persistent message queues. This is a quite useful
 feature in some usecases. For example, you can have two servers that need to
 communicate with each other. By using a queue the servers do not need to be online
 at the same time, this create a very robust communication channel. You can treat
@@ -233,6 +237,7 @@ listened by some other service that stores the results in a database.
 * [Queue##resume](#resume)
 * [Queue##count](#count)
 * [Queue##empty](#empty)
+* [Queue##close](#close)
 * [Job](#job)
 * [Job##remove](#remove)
 
@@ -329,9 +334,9 @@ __Arguments__
 <a name="resume"/>
 #### Queue##resume()
 
-Returns a promise that resolves when the queue is resumed after being paused. 
-The resume is global, meaning that all workers in all queue instances for 
-a given queue will be resumed. 
+Returns a promise that resolves when the queue is resumed after being paused.
+The resume is global, meaning that all workers in all queue instances for
+a given queue will be resumed.
 
 Resuming a queue that is not paused does nothing.
 
@@ -370,6 +375,19 @@ __Arguments__
   returns {Promise} A promise that resolves with the queue is emptied.
 ```
 
+---------------------------------------
+
+<a name="close"/>                                                               
+#### Queue##close()                                                             
+Closes the underlying redis client. Use this if you are performing a graceful   
+shutdown.                                                                       
+                                                                                
+__Arguments__                                                                   
+                                                                                
+```javascript                                                                   
+  returns {Promise} A promise that resolves when the redis client closes.       
+```                                                                             
+                                                                                
 ---------------------------------------
 
 <a name="getJob"/>
